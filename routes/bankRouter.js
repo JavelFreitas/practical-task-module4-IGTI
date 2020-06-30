@@ -88,13 +88,13 @@ bankRouter.patch('/transactions/withdraw', async (request, response) => {
         if (transactionFind.length === 0) {
             throw 'Accound not found';
         }
-        if((transactionFind[0].balance - saque) < 0){
+        if((transactionFind[0].balance - (saque + 1)) < 0){
             throw 'Not enought money to withdraw';
         }
 
         const transactionWithdrawn = await transactionModel.findOneAndUpdate(
             { agencia, conta },
-            { $inc: { balance: saque * (-1) } },
+            { $inc: { balance: (saque + 1) * (-1) } },
             { new: true }
         );
         response.send(transactionWithdrawn);
@@ -111,12 +111,32 @@ bankRouter.patch('/transactions/getBalance', async (request, response) => {
         if (transactionFind.length === 0) {
             throw 'Accound not found';
         }
-        
+
         const balance = transactionFind[0].balance;
         console.log(balance);
         
         response.status(200).send({balance});
          
+    } catch (error) {
+        response.status(500).send({ error });
+    }
+});
+
+bankRouter.delete('/transactions/deleteAccount', async (request, response) => {
+    try {
+        const {agencia, conta} = request.body;
+        const transactionFind = await transactionModel.find({ agencia });
+
+        if(transactionFind.length === 0){
+            throw 'Agency not found';
+        }
+
+        const transactionDeleted = await transactionModel.findOneAndDelete({ agencia, conta });
+        if (!transactionDeleted) {
+            response.status(404).send('Account not found');
+        }
+        
+        response.status(200).send({accountsRemaining: (transactionFind.length - 1)});
     } catch (error) {
         response.status(500).send({ error });
     }
