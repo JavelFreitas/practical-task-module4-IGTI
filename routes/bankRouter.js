@@ -28,14 +28,27 @@ bankRouter.post('/transactions/create', async (request, response) => {
 
 bankRouter.delete('/transactions/delete/:id', async (request, response) => {
     try {
-        const transactionDeleted = await transactionModel.findOneAndDelete({'_id': request.params.id});
+        const transactionDeleted = await transactionModel.findOneAndDelete({ '_id': request.params.id });
         if (!transactionDeleted) {
             response.status(404).send('Document not found');
         }
         response.status(200).send(transactionDeleted);
     } catch (error) {
+        response.status(500).send({ error });
+    }
+})
+
+bankRouter.patch('/transactions/update/:id', async (request, response) => {
+    try {
+        const transactionUpdated = await transactionModel.findOneAndUpdate(
+            {'_id': request.params.id},
+            request.body,
+            { new: true });
+        response.send(transactionUpdated)
+    }catch(error){
         response.status(500).send({error});
     }
 })
+
 
 export { bankRouter };
