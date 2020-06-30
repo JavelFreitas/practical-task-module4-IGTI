@@ -59,7 +59,7 @@ bankRouter.patch('/transactions/update/:id', async (request, response) => {
 bankRouter.patch('/transactions/deposit', async (request, response) => {
     try {
         if (request.body.deposito <= 0) {
-            throw 'Invalid amount'
+            throw 'Negative amount is not valid';
         }
         const { agencia, conta, deposito } = request.body;
         const transactionFind = await transactionModel.find({ agencia, conta });
@@ -77,5 +77,31 @@ bankRouter.patch('/transactions/deposit', async (request, response) => {
         response.status(500).send({ error });
     }
 });
+
+bankRouter.patch('/transactions/withdraw', async (request, response) => {
+    try {
+        if (request.body.saque <= 0) {
+            throw 'Negative amount is not valid';
+        }
+        const { agencia, conta, saque } = request.body;
+        const transactionFind = await transactionModel.find({ agencia, conta });
+        if (transactionFind.length === 0) {
+            throw 'Accound not found';
+        }
+        if((transactionFind[0].balance - saque) < 0){
+            throw 'Not enought money to withdraw';
+        }
+
+        const transactionWithdrawn = await transactionModel.findOneAndUpdate(
+            { agencia, conta },
+            { $inc: { balance: saque * (-1) } },
+            { new: true }
+        );
+        response.send(transactionWithdrawn);
+    } catch (error) {
+        response.status(500).send({ error });
+    }
+});
+
 
 export { bankRouter };
