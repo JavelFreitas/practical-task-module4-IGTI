@@ -26,6 +26,16 @@ bankRouter.post('/transactions/create', async (request, response) => {
     }
 });
 
-
+bankRouter.delete('/transactions/delete/:id', async (request, response) => {
+    try {
+        const transactionDeleted = await transactionModel.findOneAndDelete({'_id': request.params.id});
+        if (!transactionDeleted) {
+            response.status(404).send('Document not found');
+        }
+        response.status(200).send(transactionDeleted);
+    } catch (error) {
+        response.status(500).send({error});
+    }
+})
 
 export { bankRouter };
