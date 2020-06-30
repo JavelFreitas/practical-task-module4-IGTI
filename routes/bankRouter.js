@@ -103,5 +103,24 @@ bankRouter.patch('/transactions/withdraw', async (request, response) => {
     }
 });
 
+bankRouter.patch('/transactions/getBalance', async (request, response) => {
+    try {
+        const { agencia, conta } = request.body;
+        const transactionFind = await transactionModel.find({ agencia, conta });
+
+        if (transactionFind.length === 0) {
+            throw 'Accound not found';
+        }
+        
+        const balance = transactionFind[0].balance;
+        console.log(balance);
+        
+        response.status(200).send({balance});
+         
+    } catch (error) {
+        response.status(500).send({ error });
+    }
+});
+
 
 export { bankRouter };
