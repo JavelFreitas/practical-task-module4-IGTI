@@ -19,6 +19,7 @@ app.listen(3000, async () => {
             {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
+                useFindAndModify: false
             }
         );
         console.log('depois de conectar');
