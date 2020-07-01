@@ -153,18 +153,18 @@ bankRouter.patch('/transactions/transfer', async (request, response) => {
         const transferOrigin = await transactionModel.findOne(
             { conta: contaOrigem });
 
-        if (!transferOrigin) {throw `Account ${contaOrigem} not found`;}
+        if (!transferOrigin) { throw `Account ${contaOrigem} not found`; }
 
         const transferDestination = await transactionModel.findOne(
             { conta: contaDestino });
 
-        if (!transferDestination) {throw `Account ${contaDestino} not found`;}
+        if (!transferDestination) { throw `Account ${contaDestino} not found`; }
 
         if (transferOrigin.agencia !== transferDestination.agencia) {
             withdrawOrigin += 8;
         }
 
-;
+        ;
         await transactionModel.findOneAndUpdate(
             { agencia: transferOrigin.agencia, conta: transferOrigin.conta },
             { $inc: { balance: ((withdrawOrigin) * (-1)) } },
@@ -180,6 +180,27 @@ bankRouter.patch('/transactions/transfer', async (request, response) => {
 
     } catch (error) {
         response.status(500).send({ error });
+    }
+});
+
+bankRouter.get('/transactions/averageBalance/:agencia', async (request, response) => {
+    try {
+        const { agencia } = request.params;
+        let quantity = 0;
+
+        const accounts = await transactionModel.find({ agencia });
+        if(accounts.length === 0){
+            throw 'Agency not found';
+        }
+        
+        const totalBalance = accounts.reduce((curr, next) => {
+            quantity++;
+            return curr + next.balance;
+        }, 0);
+
+        response.send({average: (totalBalance/quantity)});
+    } catch (error) {
+        response.status(500).send(error);
     }
 });
 
