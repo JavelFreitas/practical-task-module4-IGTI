@@ -88,7 +88,7 @@ bankRouter.patch('/transactions/withdraw', async (request, response) => {
         if (transactionFind.length === 0) {
             throw 'Accound not found';
         }
-        if((transactionFind[0].balance - (saque + 1)) < 0){
+        if ((transactionFind[0].balance - (saque + 1)) < 0) {
             throw 'Not enought money to withdraw';
         }
 
@@ -103,7 +103,7 @@ bankRouter.patch('/transactions/withdraw', async (request, response) => {
     }
 });
 
-bankRouter.patch('/transactions/getBalance', async (request, response) => {
+bankRouter.get('/transactions/getBalance', async (request, response) => {
     try {
         const { agencia, conta } = request.body;
         const transactionFind = await transactionModel.find({ agencia, conta });
@@ -114,9 +114,9 @@ bankRouter.patch('/transactions/getBalance', async (request, response) => {
 
         const balance = transactionFind[0].balance;
         console.log(balance);
-        
-        response.status(200).send({balance});
-         
+
+        response.status(200).send({ balance });
+
     } catch (error) {
         response.status(500).send({ error });
     }
@@ -124,10 +124,10 @@ bankRouter.patch('/transactions/getBalance', async (request, response) => {
 
 bankRouter.delete('/transactions/deleteAccount', async (request, response) => {
     try {
-        const {agencia, conta} = request.body;
+        const { agencia, conta } = request.body;
         const transactionFind = await transactionModel.find({ agencia });
 
-        if(transactionFind.length === 0){
+        if (transactionFind.length === 0) {
             throw 'Agency not found';
         }
 
@@ -135,12 +135,52 @@ bankRouter.delete('/transactions/deleteAccount', async (request, response) => {
         if (!transactionDeleted) {
             response.status(404).send('Account not found');
         }
-        
-        response.status(200).send({accountsRemaining: (transactionFind.length - 1)});
+
+        response.status(200).send({ accountsRemaining: (transactionFind.length - 1) });
     } catch (error) {
         response.status(500).send({ error });
     }
 });
 
+bankRouter.patch('/transactions/transfer', async (request, response) => {
+    try {
+        const { contaOrigem, contaDestino, valor } = request.body;
+        if (valor <= 0) {
+            throw 'Negative value not allowed';
+        }
+        let withdrawOrigin = valor;
+
+        const transferOrigin = await transactionModel.findOne(
+            { conta: contaOrigem });
+
+        if (!transferOrigin) {throw `Account ${contaOrigem} not found`;}
+
+        const transferDestination = await transactionModel.findOne(
+            { conta: contaDestino });
+
+        if (!transferDestination) {throw `Account ${contaDestino} not found`;}
+
+        if (transferOrigin.agencia !== transferDestination.agencia) {
+            withdrawOrigin += 8;
+        }
+
+;
+        await transactionModel.findOneAndUpdate(
+            { agencia: transferOrigin.agencia, conta: transferOrigin.conta },
+            { $inc: { balance: ((withdrawOrigin) * (-1)) } },
+        );
+
+        await transactionModel.findOneAndUpdate(
+            { agencia: transferDestination.agencia, conta: transferDestination.conta },
+            { $inc: { balance: valor } },
+        );
+
+
+        response.status(200).send({ balanceOrigin: (transferOrigin.balance - withdrawOrigin) });
+
+    } catch (error) {
+        response.status(500).send({ error });
+    }
+});
 
 export { bankRouter };
