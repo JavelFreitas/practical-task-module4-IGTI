@@ -217,7 +217,7 @@ bankRouter.get('/transactions/ascendingBalance/:limite', async (request, respons
 
         response.status(200).send({ filteredAccounts });
     } catch (error) {
-        response.status(500).send({ error })
+        response.status(500).send({ error });
     }
 });
 
@@ -245,8 +245,30 @@ bankRouter.get('/transactions/descendingBalance/:limite', async (request, respon
 
         response.status(200).send({ filteredAccounts });
     } catch (error) {
-        response.status(500).send({ error })
+        response.status(500).send({ error });
     }
 });
 
+bankRouter.get('/transactions/transferTopClients', async (request, response) => {
+    try {
+        const agencias = await transactionModel.distinct("agencia", { agencia: { $ne: 99 } });
+
+
+        for(const agency of agencias){
+            await transactionModel.findOneAndUpdate({
+                agencia: agency
+            },
+                { $set: { agencia: 99 } }
+            ).sort({'balance': -1});
+        }
+        
+        const privateAccounts = await transactionModel
+            .find({ 'agencia': 99 })
+            .sort({ 'balance': -1 });
+
+        response.status(200).send({privateAccounts});
+    } catch (error) {
+        response.status(500).send({ error });
+    }
+});
 export { bankRouter };
