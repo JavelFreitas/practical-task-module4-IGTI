@@ -210,14 +210,40 @@ bankRouter.get('/transactions/ascendingBalance/:limite', async (request, respons
         limite = parseInt(limite);
         const filteredAccounts = await transactionModel
             .aggregate([
-                {$project: {agencia: 1, conta: 1, balance: 1}},
-                {$sort: {balance: 1}},
-                {$limit: Number(limite)}
+                { $project: { agencia: 1, conta: 1, balance: 1 } },
+                { $sort: { balance: 1 } },
+                { $limit: Number(limite) }
             ]);
-            
-        console.log(filteredAccounts);
-        
-        response.status(200).send({filteredAccounts});
+
+        response.status(200).send({ filteredAccounts });
+    } catch (error) {
+        response.status(500).send({ error })
+    }
+});
+
+bankRouter.get('/transactions/descendingBalance/:limite', async (request, response) => {
+    try {
+        let { limite } = request.params;
+        limite = parseInt(limite);
+        const filteredAccounts = await transactionModel
+            .aggregate([
+                {
+                    $project: {
+                        agencia: 1,
+                        conta: 1,
+                        name: 1,
+                        balance: 1
+                    }
+                },
+                {
+                    $sort: {
+                        balance: -1
+                    }
+                },
+                { $limit: Number(limite) }
+            ]);
+
+        response.status(200).send({ filteredAccounts });
     } catch (error) {
         response.status(500).send({ error })
     }
