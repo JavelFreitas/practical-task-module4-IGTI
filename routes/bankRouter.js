@@ -271,4 +271,17 @@ bankRouter.get('/transactions/transferTopClients', async (request, response) => 
         response.status(500).send({ error });
     }
 });
+
+bankRouter.delete('/transactions/deleteAll', async(request, response) =>{
+    try{
+        const agencias = await transactionModel.distinct("agencia");
+
+        for(let agency of agencias){
+            await transactionModel.deleteMany({agencia: agency});
+        }
+        response.send({message: 'Everything deleted'});
+    }catch(error){
+        response.status(500).send({error})
+    }
+});
 export { bankRouter };
