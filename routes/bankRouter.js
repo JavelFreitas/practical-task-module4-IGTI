@@ -189,18 +189,37 @@ bankRouter.get('/transactions/averageBalance/:agencia', async (request, response
         let quantity = 0;
 
         const accounts = await transactionModel.find({ agencia });
-        if(accounts.length === 0){
+        if (accounts.length === 0) {
             throw 'Agency not found';
         }
-        
+
         const totalBalance = accounts.reduce((curr, next) => {
             quantity++;
             return curr + next.balance;
         }, 0);
 
-        response.send({average: (totalBalance/quantity)});
+        response.send({ average: (totalBalance / quantity) });
     } catch (error) {
-        response.status(500).send(error);
+        response.status(500).send({ error });
+    }
+});
+
+bankRouter.get('/transactions/ascendingBalance/:limite', async (request, response) => {
+    try {
+        let { limite } = request.params;
+        limite = parseInt(limite);
+        const filteredAccounts = await transactionModel
+            .aggregate([
+                {$project: {agencia: 1, conta: 1, balance: 1}},
+                {$sort: {balance: 1}},
+                {$limit: Number(limite)}
+            ]);
+            
+        console.log(filteredAccounts);
+        
+        response.status(200).send({filteredAccounts});
+    } catch (error) {
+        response.status(500).send({ error })
     }
 });
 
