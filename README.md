@@ -1,6 +1,6 @@
 # Practical Challenge - module 4
 
-Practical challange from IGTI's 2020 Fullstack Bootcamp.
+Practical challenge from IGTI's 2020 Fullstack Bootcamp.
 
 ## Objective
 
