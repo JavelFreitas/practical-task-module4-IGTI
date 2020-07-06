@@ -15,13 +15,13 @@ The api manages a mongodb database, with basic CRUD and other functionalities.
 ## Aplication endpoints
 
 ### Basic CRUD
-1. **/transactions**
+1. *Get* - **/transactions**
 
     Params: None
 
     Return: All accounts and transactions
 
-2. **/transactions/create**
+2. *Post* - **/transactions/create**
 
     * Body params:  
     "agencia" : Number,  
@@ -31,13 +31,13 @@ The api manages a mongodb database, with basic CRUD and other functionalities.
 
     * Return: 200 OK, the information of creation and the id for the account.
 
-3. **/transactions/delete/:id**
+3. *Delete* - **/transactions/delete/:id**
 
     * Params: Id of the account to be deleted
 
     * Return: Information of the deleted account
 
-4. **/transactions/update/:id**
+4. *Patch* - **/transactions/update/:id**
 
     * Params: Id of the account to be updated
 
@@ -47,7 +47,7 @@ The api manages a mongodb database, with basic CRUD and other functionalities.
 
 ### Task endpoints
 
-5. **/transactions/deposit**
+5. *Patch* - **/transactions/deposit**
 
     * Body params:  
     "agencia": Number,  
@@ -56,7 +56,7 @@ The api manages a mongodb database, with basic CRUD and other functionalities.
 
     * Return: Updated account info
 
-6. **/transactions/withdraw**
+6. *Patch* - **/transactions/withdraw**
 
     * Body params:  
     "agencia": Number,  
@@ -65,7 +65,7 @@ The api manages a mongodb database, with basic CRUD and other functionalities.
 
     * Return: Updated account info
 
-7. **/transactions/getBalance**
+7. *Get* - **/transactions/getBalance**
 
     * Body params:  
     "agencia": Number,  
@@ -73,7 +73,7 @@ The api manages a mongodb database, with basic CRUD and other functionalities.
 
     * Return: Balance of the account
 
-8. **/transactions/deleteAccount**
+8. *Delete* - **/transactions/deleteAccount**
 
     * Body params:  
     "agencia": Number,  
@@ -81,7 +81,7 @@ The api manages a mongodb database, with basic CRUD and other functionalities.
 
     * Return: Account remaining in that agency
 
-9. **/transactions/transfer**
+9. *Patch* - **/transactions/transfer**
 
     * Body params:  
     "contaOrigem": Number,  
@@ -90,25 +90,25 @@ The api manages a mongodb database, with basic CRUD and other functionalities.
 
     * Return: Balance of the principal account for the transfer
 
-10. **/transactions/averageBalance/:agencia**
+10. *Get* - **/transactions/averageBalance/:agencia**
 
     * Params: Number of the agency
 
     * Return: Average balance of that agency
 
-11. **/transactions/ascendingBalance/:limite**  
+11. *Get* - **/transactions/ascendingBalance/:limite**  
 
     * Params: Limit of accounts to be listed
     
     * Return: List of accounts (Balance in ascending order)
 
-12. **/transactions/descendingBalance/12**  
+12. *Get* - **/transactions/descendingBalance/12**  
 
     * Params: Limit of accounts to be listed
     
     * Return: List of accounts (Balance in descending order)
 
-13. **/transactions/transferTopClients**
+13. *Get* - **/transactions/transferTopClients**
 
     ``` Transfer the client with the largest amount of balance from each agency to agency 99  ```
 
@@ -116,7 +116,7 @@ The api manages a mongodb database, with basic CRUD and other functionalities.
 
     * Return: Updated list of all accouts with 99 agency
 
-14.  **/transactions/deleteAll**
+14. *Delete* - **/transactions/deleteAll**
 
     * Params: None
 
