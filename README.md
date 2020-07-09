@@ -1,6 +1,6 @@
 # Practical Task - module 4
 
-Practical challenge from IGTI's 2020 Fullstack Bootcamp.
+Practical task from IGTI's 2020 Fullstack Bootcamp.
 
 ## Objective
 
